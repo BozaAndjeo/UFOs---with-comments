@@ -1,0 +1,1567 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package view;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import java.util.LinkedList;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import model.Ship;
+
+/**
+ *
+ * @author Runelord
+ */
+public class MainWindow extends javax.swing.JFrame {
+
+    /**
+     * Creates new form MainWindow
+     */
+    public MainWindow() {
+        initComponents();
+    }
+    JPanel layered; // tbc
+    
+    JLabel bigShipLabel; // JLabel of big, arrow controled, ship
+    
+    LinkedList <Bullet> bulletList=new LinkedList <Bullet>(); // List of existent Bullet objects
+    LinkedList <JLabel> bulletLabelList=new LinkedList <JLabel>(); // List of JLabels for Bullets
+    
+    Help helpMenu=new Help(); // tbc
+    
+    boolean keyPressed=false; // tbc
+    LinkedList <String> pressedKeyCodes=new LinkedList <String>(); // List of codes of pressed keys.
+    
+    double bigPictureWidth=5200; // Actual width of picture that is used for backgroundImage
+    double bigPictureHeight=2500; // It's height
+    // "Big Picture" is HD resolution image that will be downscalled for use that corresponds
+    // to resolution of the screen
+    
+    double pictureModifier; // Factor by which Big Picture needs to be scalled
+    
+    int screenWidth; // Screen width
+    int screenHeight; // Screen height
+    
+    int moveableBackgroundWidth; // Needed width to which to scale Big Picture 
+    int moveableBackgroundHeight; // Same, but height
+    // As backgroundImage is moving with cursor movement, it needs to have dimensions
+    // somewhat wider than the screen
+    
+    int bigCutoutWidth;     // Cutout width
+    int bigCutoutHeight;    // and height 
+    // Before Big Picture is scaled to size, a cuttout of it needs to be taken
+    // that is of same Aspect Ratio as the screen
+    
+    // An artifact, do not know why I nedeed these
+    // int rightPanelWidth;
+    // int downPanelHeight;
+    // int tableWidth;    
+    // int tableHeight;
+     
+    Point p, p2;
+    Image backgroundImage;
+    Image moveableBackgroundImage;
+    Image blueTileImage;
+    Image redTileImage;
+    Image spaceShipImage;
+    Image laserStart[]=new Image[51], laserFragment[]=new Image[51], laserEnd[]=new Image[51];
+    Image laserImage;
+    Image explosionImage, rotatedExplosionImage;
+    Image bigSpaceShipImage;
+    Image bulletImage;
+    
+    BufferedImage bigSpaceShipBuff;
+    
+    Cursor cursor; // Cursor
+    
+    int numberOfShips=0; // The number of little ships
+    
+    JLabel imageLabel=new JLabel();
+    JLabel laserLabel=new JLabel();
+    JLabel explosionLabel=new JLabel();
+    JLabel[][] field=new JLabel[100][100]; // An array of labels to be used for grid
+    
+    ImageIcon backgroundIcon=new ImageIcon();
+    ImageIcon tileIcon=new ImageIcon();
+    ImageIcon redTileIcon=new ImageIcon();
+    ImageIcon spaceShipIcon=new ImageIcon();
+    ImageIcon laserIcon=new ImageIcon();
+    ImageIcon explosionIcon=new ImageIcon();
+    ImageIcon bulletIcon=new ImageIcon();
+    
+    LinkedList <Ship> spaceShipList=new LinkedList <Ship>();
+    LinkedList <JLabel> shipLabelList=new LinkedList <JLabel>();
+    
+    Graphics2D g; //tbc
+    
+    int lastX=0; // X coordinate of the previous selected tile
+    int lastY=0; // Y coordinate of the previous selected tile
+    int selectedX=-1; // Coordinates of the presently selected tile
+    int selectedY=-1; // If no tile is selected these are set to (-1,-1)
+    int selectedShip; // "Serial number" of the selected ship
+    
+    boolean selected=false; // Argument describing if any ship is selected
+    boolean caught=false; // tbc
+    boolean empty; // tbc
+    boolean actionInProgress=false; // Describes if any thread is currently in progress
+    
+    Graphics2D g2; // tbc
+    
+    Mover t1; // tbc
+    LaserCount lc; // tbc
+    
+    Painter paint= new Painter(); // tbc
+    
+    boolean exit=false; // Describes if aplication is currently closing itself,
+                        // I use it so that recuring threads would know when to terminate
+    
+    //OPTIONS
+    int ds=10;
+    int dt=20;
+    int laserRange=500;
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        backgroundPanel = new javax.swing.JPanel();
+        exitButton = new javax.swing.JButton();
+        madeBy = new javax.swing.JLabel();
+        helpButton = new javax.swing.JButton();
+        optionsPanel = new javax.swing.JPanel();
+        shipSpeedPerFrameSlider = new javax.swing.JSlider();
+        milisecondsPerFrameSlider = new javax.swing.JSlider();
+        laserRangeSlider = new javax.swing.JSlider();
+        shipSpeedPerFrameLabel = new javax.swing.JLabel();
+        milisecondsPerFrameLabel = new javax.swing.JLabel();
+        laserRangeLabel = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        applyButton = new javax.swing.JButton();
+        optionsButton = new javax.swing.JButton();
+
+        backgroundPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                backgroundPanelMouseMoved(evt);
+            }
+        });
+        backgroundPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                backgroundPanelMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
+        backgroundPanel.setLayout(backgroundPanelLayout);
+        backgroundPanelLayout.setHorizontalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 500, Short.MAX_VALUE)
+        );
+        backgroundPanelLayout.setVerticalGroup(
+            backgroundPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 500, Short.MAX_VALUE)
+        );
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        setResizable(false);
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                formMouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                formMouseMoved(evt);
+            }
+        });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                formMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
+            }
+        });
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                formKeyTyped(evt);
+            }
+        });
+
+        exitButton.setText("Exit");
+        exitButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                exitButtonMousePressed(evt);
+            }
+        });
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButtonActionPerformed(evt);
+            }
+        });
+
+        madeBy.setForeground(new java.awt.Color(255, 255, 51));
+        madeBy.setText("Made by Runelord for bragging rights.");
+
+        helpButton.setText("Help");
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+
+        optionsPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        optionsPanel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                optionsPanelKeyTyped(evt);
+            }
+        });
+
+        shipSpeedPerFrameSlider.setMaximum(20);
+        shipSpeedPerFrameSlider.setMinimum(1);
+        shipSpeedPerFrameSlider.setValue(10);
+        shipSpeedPerFrameSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                shipSpeedPerFrameSliderMouseDragged(evt);
+            }
+        });
+        shipSpeedPerFrameSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                shipSpeedPerFrameSliderMouseClicked(evt);
+            }
+        });
+        shipSpeedPerFrameSlider.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                shipSpeedPerFrameSliderPropertyChange(evt);
+            }
+        });
+
+        milisecondsPerFrameSlider.setMaximum(40);
+        milisecondsPerFrameSlider.setMinimum(1);
+        milisecondsPerFrameSlider.setValue(20);
+        milisecondsPerFrameSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                milisecondsPerFrameSliderMouseDragged(evt);
+            }
+        });
+        milisecondsPerFrameSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                milisecondsPerFrameSliderMouseClicked(evt);
+            }
+        });
+
+        laserRangeSlider.setMaximum(21);
+        laserRangeSlider.setMinimum(1);
+        laserRangeSlider.setValue(10);
+        laserRangeSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                laserRangeSliderMouseDragged(evt);
+            }
+        });
+        laserRangeSlider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                laserRangeSliderMouseClicked(evt);
+            }
+        });
+
+        shipSpeedPerFrameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        shipSpeedPerFrameLabel.setText("10");
+
+        milisecondsPerFrameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        milisecondsPerFrameLabel.setText("20");
+
+        laserRangeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        laserRangeLabel.setText("10 tiles");
+
+        jLabel5.setText("Ship speed per frame:");
+
+        jLabel6.setText("Miliseconds per frame:");
+
+        jLabel7.setText("Laser range:");
+
+        applyButton.setText("Apply");
+        applyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                applyButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout optionsPanelLayout = new javax.swing.GroupLayout(optionsPanel);
+        optionsPanel.setLayout(optionsPanelLayout);
+        optionsPanelLayout.setHorizontalGroup(
+            optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(optionsPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, optionsPanelLayout.createSequentialGroup()
+                        .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(optionsPanelLayout.createSequentialGroup()
+                                .addComponent(laserRangeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(laserRangeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+                            .addGroup(optionsPanelLayout.createSequentialGroup()
+                                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(milisecondsPerFrameSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(shipSpeedPerFrameSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(shipSpeedPerFrameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                                    .addComponent(milisecondsPerFrameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                    .addComponent(applyButton, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
+        );
+        optionsPanelLayout.setVerticalGroup(
+            optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(optionsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(shipSpeedPerFrameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(shipSpeedPerFrameSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(11, 11, 11)
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(optionsPanelLayout.createSequentialGroup()
+                        .addComponent(milisecondsPerFrameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(11, 11, 11))
+                    .addGroup(optionsPanelLayout.createSequentialGroup()
+                        .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(milisecondsPerFrameSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(laserRangeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(laserRangeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(applyButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        optionsButton.setText("Options");
+        optionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionsButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(madeBy)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(optionsButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(helpButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exitButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 221, Short.MAX_VALUE)
+                        .addComponent(optionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(291, Short.MAX_VALUE)
+                .addComponent(optionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(exitButton)
+                            .addComponent(helpButton)
+                            .addComponent(optionsButton))
+                        .addContainerGap())
+                    .addComponent(madeBy, javax.swing.GroupLayout.Alignment.TRAILING)))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
+        // TODO add your handling code here:
+        try{mouseMoved();}catch (Exception e){}
+        requestFocusInWindow();
+    }//GEN-LAST:event_formMouseMoved
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+        if (actionInProgress==false) mouseClicked();
+        
+        //Point point=bigShipLabel.getMousePosition();
+        //madeBy.setText(""+point);
+    }//GEN-LAST:event_formMouseClicked
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formComponentResized
+
+    private void backgroundPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backgroundPanelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_backgroundPanelMouseClicked
+
+    private void backgroundPanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backgroundPanelMouseMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_backgroundPanelMouseMoved
+
+    private void formMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMouseExited
+
+    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
+        // TODO add your handling code here:
+        if(!actionInProgress){
+        exit=true;
+        helpMenu.dispose();
+        dispose();
+        
+        System.out.println("-----------------------");
+        System.out.println(pressedKeyCodes);
+        }
+    }//GEN-LAST:event_exitButtonActionPerformed
+
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
+        // TODO add your handling code here
+        keyPressed=true;
+        pressedKeyCodes.clear();
+        
+        helpMenu.setLocationRelativeTo(null);
+        helpMenu.setVisible(true);
+        
+        requestFocusInWindow();
+    }//GEN-LAST:event_helpButtonActionPerformed
+
+    private void applyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyButtonActionPerformed
+        // TODO add your handling code here:
+        optionsPanel.setVisible(false);
+        optionsButton.setEnabled(true);
+        ds=shipSpeedPerFrameSlider.getValue();
+        dt=milisecondsPerFrameSlider.getValue();
+        laserRange=laserRangeSlider.getValue()*50;
+        
+        requestFocusInWindow();
+    }//GEN-LAST:event_applyButtonActionPerformed
+
+    private void optionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsButtonActionPerformed
+        // TODO add your handling code here:
+        keyPressed=true;
+        pressedKeyCodes.clear();
+        optionsPanel.setVisible(true);
+        optionsButton.setEnabled(false);
+        //shipSpeedPerFrameLabel.setText(""+shipSpeedPerFrameSlider.getValue());
+        //shipSpeedPerFrame
+    }//GEN-LAST:event_optionsButtonActionPerformed
+
+    private void shipSpeedPerFrameSliderPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_shipSpeedPerFrameSliderPropertyChange
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_shipSpeedPerFrameSliderPropertyChange
+
+    private void shipSpeedPerFrameSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_shipSpeedPerFrameSliderMouseClicked
+        // TODO add your handling code here:
+        shipSpeedPerFrameLabel.setText(""+shipSpeedPerFrameSlider.getValue());
+    }//GEN-LAST:event_shipSpeedPerFrameSliderMouseClicked
+
+    private void shipSpeedPerFrameSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_shipSpeedPerFrameSliderMouseDragged
+        // TODO add your handling code here:
+        shipSpeedPerFrameLabel.setText(""+shipSpeedPerFrameSlider.getValue());
+    }//GEN-LAST:event_shipSpeedPerFrameSliderMouseDragged
+
+    private void milisecondsPerFrameSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_milisecondsPerFrameSliderMouseClicked
+        // TODO add your handling code here:
+        milisecondsPerFrameLabel.setText(""+milisecondsPerFrameSlider.getValue());
+    }//GEN-LAST:event_milisecondsPerFrameSliderMouseClicked
+
+    private void milisecondsPerFrameSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_milisecondsPerFrameSliderMouseDragged
+        // TODO add your handling code here:
+        milisecondsPerFrameLabel.setText(""+milisecondsPerFrameSlider.getValue());
+    }//GEN-LAST:event_milisecondsPerFrameSliderMouseDragged
+
+    private void laserRangeSliderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_laserRangeSliderMouseClicked
+        // TODO add your handling code here:
+        String tiles;
+        if(laserRangeSlider.getValue()>1) tiles=" tiles";
+        else tiles=" tile";
+        
+        if(laserRangeSlider.getValue()<21) laserRangeLabel.setText(laserRangeSlider.getValue()+tiles);
+        else laserRangeLabel.setText("Unlimited");
+    }//GEN-LAST:event_laserRangeSliderMouseClicked
+
+    private void laserRangeSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_laserRangeSliderMouseDragged
+        // TODO add your handling code here:
+        String tiles;
+        if(laserRangeSlider.getValue()>1) tiles=" tiles";
+        else tiles=" tile";
+        
+        if(laserRangeSlider.getValue()<21) laserRangeLabel.setText(laserRangeSlider.getValue()+tiles);
+        else laserRangeLabel.setText("Unlimited");
+    }//GEN-LAST:event_laserRangeSliderMouseDragged
+
+    private void exitButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitButtonMousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_exitButtonMousePressed
+
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMousePressed
+
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMouseReleased
+
+    private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
+        // TODO add your handling code here:
+        try{mouseMoved();}catch (Exception e) {}
+    }//GEN-LAST:event_formMouseDragged
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+        requestFocusInWindow();
+        keyPressed=true;
+        String s=""+evt.getExtendedKeyCode();
+        if(!(pressedKeyCodes.contains(s))) pressedKeyCodes.add(s);
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formKeyTyped
+
+    private void optionsPanelKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_optionsPanelKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_optionsPanelKeyTyped
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        // TODO add your handling code here:
+        requestFocusInWindow();
+        keyPressed=false;
+        System.out.println("Pressed key code: "+evt.getExtendedKeyCode());
+        //madeBy.setText(""+evt.getExtendedKeyCode());
+        String s=""+evt.getExtendedKeyCode();
+        if(pressedKeyCodes.contains(s)) pressedKeyCodes.remove(s);
+    }//GEN-LAST:event_formKeyReleased
+  
+           
+    
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainWindow().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton applyButton;
+    private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JButton exitButton;
+    private javax.swing.JButton helpButton;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel laserRangeLabel;
+    private javax.swing.JSlider laserRangeSlider;
+    private javax.swing.JLabel madeBy;
+    private javax.swing.JLabel milisecondsPerFrameLabel;
+    private javax.swing.JSlider milisecondsPerFrameSlider;
+    private javax.swing.JButton optionsButton;
+    private javax.swing.JPanel optionsPanel;
+    private javax.swing.JLabel shipSpeedPerFrameLabel;
+    private javax.swing.JSlider shipSpeedPerFrameSlider;
+    // End of variables declaration//GEN-END:variables
+    
+     
+    
+    
+    synchronized public void activate(){
+        remove(backgroundPanel);
+        
+        optionsPanel.setVisible(false);
+        
+        fullScreen();
+        
+        layered=new JPanel();
+        layered.setLocation(0, 0);
+        layered.setSize(screenWidth, screenHeight);
+        layered.setVisible(true);
+        layered.setOpaque(false);
+        layered.setLayout(null);
+        add(layered);
+        
+        setTitle("UFOs");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        Dimension d1=new Dimension();
+        d1.height=screenHeight;
+        d1.width=screenWidth;
+        
+        setSize(d1);
+        
+        //Loading of Bullet
+        BufferedImage bulletBuff=null;
+        try
+        {
+            bulletBuff = ImageIO.read(getClass().getResource("/images/bullet.png"));
+        } catch (Exception e) {}
+        bulletImage = bulletBuff;
+        bulletIcon=new ImageIcon(bulletImage);
+        
+        //Loading of Blue Tile
+        BufferedImage blueTileBuff=null;
+        try
+        {
+            blueTileBuff = ImageIO.read(getClass().getResource("/images/translucentBlueTile.png"));
+        } catch (Exception e) {}
+        blueTileImage = blueTileBuff;
+        
+        //Loading of Ship2
+        bigSpaceShipBuff=null;
+        try
+        {
+            bigSpaceShipBuff = ImageIO.read(getClass().getResource("/images/ship2.png"));
+        } catch (Exception e) {}
+        bigSpaceShipImage = bigSpaceShipBuff;
+        
+        ImageIcon bigIcon=new ImageIcon(bigSpaceShipImage); 
+        bigShipLabel=new JLabel();
+        bigShipLabel.setIcon(bigIcon);
+        bigShipLabel.setSize(bigSpaceShipBuff.getWidth(),bigSpaceShipBuff.getHeight());
+        layered.add(bigShipLabel);
+        
+        //Loading of Red Tile
+        BufferedImage redTileBuff=null;
+        try
+        {
+            redTileBuff = ImageIO.read(getClass().getResource("/images/redTile.png"));
+        } catch (Exception e) {}
+        redTileImage = redTileBuff;
+        redTileIcon=new ImageIcon(redTileImage);
+        
+        //Loading of Space Man
+        BufferedImage spaceManBuff=null;
+        try
+        {
+            spaceManBuff = ImageIO.read(getClass().getResource("/images/ship.png"));
+        } catch (Exception e) {}
+        spaceShipImage = spaceManBuff;
+        
+        for(int i=50; i>=1; i--)
+        {
+        
+        //Loading of Laser Start
+        BufferedImage laserStartBuff=null;
+        try
+        {
+            laserStartBuff = ImageIO.read(getClass().getResource("/images/lasers/laserStart/laserStart ("+i+").png"));
+        } catch (Exception e) {}
+        laserStart[i] = laserStartBuff;
+        
+        //Loading of Laser Fragment
+        BufferedImage laserFragmentBuff=null;
+        try
+        {
+            laserFragmentBuff = ImageIO.read(getClass().getResource("/images/lasers/laserFragment/laserFragment ("+i+").png"));
+        } catch (Exception e) {System.out.println(e);}
+        laserFragment[i] = laserFragmentBuff;
+        
+        //Loading of Laser End
+        BufferedImage laserEndBuff=null;
+        try
+        {
+            laserEndBuff = ImageIO.read(getClass().getResource("/images/lasers/laserEnd/laserEnd.png"));
+        } catch (Exception e) {}
+        laserEnd[i] = laserEndBuff;
+        }
+
+        //Loading of Explosion
+        BufferedImage explosionBuff=null;
+        try
+        {
+            explosionBuff = ImageIO.read(getClass().getResource("/images/explosion.png"));
+        } catch (Exception e) {}
+        explosionImage = explosionBuff;
+        
+        //Loading of Cursor
+        BufferedImage cursorBuff=null;
+        try
+        {
+            cursorBuff = ImageIO.read(getClass().getResource("/images/cursor00.png"));
+        } catch (Exception e) {}
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        //System.out.println(toolkit.getBestCursorSize(25, 25));
+        Image crs = cursorBuff;
+        cursor = toolkit.createCustomCursor(crs , new Point(0, 0), "img");
+        setCursor (cursor);
+        
+        spaceShipIcon=new ImageIcon(spaceShipImage);
+        
+        //Adding Explosion Label
+        add(explosionLabel);
+
+        //Adding Laser Label
+        add(laserLabel);
+        
+        placeShips();
+        
+        tileIcon=new ImageIcon(blueTileImage);
+        for(int i=0; i<screenWidth/50; i++)
+            for(int j=0; j<screenHeight/50; j++)
+                {
+                    field[i][j]=new JLabel();
+                    field[i][j].setLocation(i*50, j*50);
+                    field[i][j].setSize(50, 50);
+                    field[i][j].setIcon(tileIcon);
+                    add(field[i][j]);
+                    field[i][j].setVisible(true);
+                }
+        
+        BufferedImage backgroundBuff=new BufferedImage(screenWidth, screenHeight, Color.TRANSLUCENT);
+        backgroundImage=backgroundBuff;
+        backgroundIcon=new ImageIcon(backgroundImage);
+        
+        g = (Graphics2D) backgroundImage.getGraphics();
+        
+        imageLabel.setSize(screenWidth, screenHeight);
+        imageLabel.setIcon(backgroundIcon);
+        
+        add(imageLabel);
+        
+        imageLabel.setLocation(0, 0);
+        
+        setIconImage(spaceShipImage);
+        
+        paint.start();
+        
+        setVisible(true);
+        
+        ButtonListener bl=new ButtonListener();
+        bl.start();
+        
+        TileButtonListener tbl=new TileButtonListener();
+        tbl.start();
+        
+        BulletManager bm=new BulletManager();
+        bm.start();
+        
+        requestFocusInWindow();
+        
+        //setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        //setUndecorated(true);
+        //setVisible(true);
+        
+    }
+   
+    public synchronized void move(int x1, int y1, int x2, int y2){
+        actionInProgress=true;
+        
+        int dt2;
+        
+        StopWatch sw;
+      
+        int x=x2-x1, y=y2-y1;
+        double s=sqrt(x*x+y*y);
+        int t = (int) (s/ds);
+        for(int i=0; i<t; i++){
+            sw=new StopWatch();
+            sw.notification=false;
+            sw.start();
+            
+            int dx= (int) (x*i*ds/s);
+            int dy= (int) (y*i*ds/s);
+            
+            shipLabelList.get(selectedShip).setLocation(x1+dx, y1+dy);
+            
+            dt2=sw.count;
+            //System.out.println(""+dt2);
+            sw.notification=true;
+            if (dt2<dt) try{wait(dt-dt2);} catch (Exception e) {}
+            else System.out.println("Overtime on travel");
+        }
+        
+        shipLabelList.get(selectedShip).setLocation((x2/50)*50, (y2/50)*50);
+        spaceShipList.get(selectedShip).x=(x2/50)*50;
+        spaceShipList.get(selectedShip).y=(y2/50)*50;
+        
+        actionInProgress=false;
+    }
+
+    public void mouseClicked(){
+        if(!caught){
+            for(int i=0;i<numberOfShips;i++)
+            if(spaceShipList.get(i).x==(p.x/50)*50)
+                if(spaceShipList.get(i).y==(p.y/50)*50){
+                    caught=true;
+                    selectedX=spaceShipList.get(i).x/50;
+                    selectedY=spaceShipList.get(i).y/50;
+                    selectedShip=i;
+            }
+        }
+        else{
+            if((p.x/50)*50!=selectedX*50 || (p.y/50)*50!=selectedY*50){
+            //Checking for emptines of tile
+            empty=true;
+            for(int i=0; i<numberOfShips; i++)
+                if(spaceShipList.get(i).x/50==p.x/50)
+                    if(spaceShipList.get(i).y/50==p.y/50)
+                        empty=false;
+
+            if(p.x/50<screenWidth/50 & p.y/50<screenHeight/50)
+            {
+                if(empty)
+                    {                     
+                        field[selectedX][selectedY].setIcon(tileIcon);
+
+                        selectedX=-1;
+                        selectedY=-1;
+
+                        t1=new Mover();
+                        t1.start();
+                
+                        caught=false;
+                    }
+            else{
+                    drawLaser();
+                }
+            }
+            }
+        }
+    }
+    public void mouseMoved(){
+        p=getMousePosition();
+        g.drawImage(moveableBackgroundImage, (int) (-p.x*0.1), (int) (-p.y*0.1), null);
+                
+        if(p.x/50<screenWidth/50 & p.y/50<screenHeight/50) {
+            if(caught==true & actionInProgress==false) field[selectedX][selectedY].setIcon(redTileIcon);
+            field[p.x/50][p.y/50].setIcon(redTileIcon);
+
+            if ((p.x/50)!=lastX || (p.y/50)!=lastY)
+            {
+                field[lastX][lastY].setIcon(tileIcon);
+                field[p.x/50][p.y/50].setIcon(redTileIcon);
+            }
+            lastX=p.x/50;
+            lastY=p.y/50;
+        }
+    }
+
+public void placeShips(){
+    for(int i=0; i<screenWidth/50; i++){
+            numberOfShips++;         
+            
+            Ship s=new Ship();
+            spaceShipList.add(s);
+            spaceShipList.get(i).x=i*50;
+            spaceShipList.get(i).y=0;
+            
+            JLabel e=new JLabel();
+            e.setIcon(spaceShipIcon);
+            e.setSize(50, 50);
+            
+            shipLabelList.add(e);
+            shipLabelList.get(i).setLocation(spaceShipList.get(i).x, spaceShipList.get(i).y);
+            
+            add(shipLabelList.get(i));
+        }
+}
+
+    public class Mover extends Thread{
+        
+    @Override
+    public void run(){
+        move(spaceShipList.get(selectedShip).x,spaceShipList.get(selectedShip).y,(p.x/50)*50, (p.y/50)*50);    
+    }
+    }
+    
+    public class Painter extends Thread{
+        StopWatch sw;
+        @Override
+        synchronized public void run(){ 
+            int dt2;
+            do
+            {
+                sw=new StopWatch();
+                sw.notification=false;
+                sw.start();
+                
+                imageLabel.repaint();
+                
+                madeBy.setText("No of Bullets: "+(layered.getComponentCount()-1));
+                
+                dt2=sw.count;
+                sw.notification=true;
+                
+                if(dt2<20)try{wait(20-dt2);} catch (Exception e) {}
+            } while(!exit);
+    }
+    }    
+    
+    synchronized public void drawLaser(){ // tbc
+                lc=new LaserCount();
+                lc.start();
+    }
+    
+    // This class composes laser's imagem then rotates it and places on required position.
+    // It also counts how transparent the laser should be and utilizes appropriate images
+    // tbc
+    public class LaserCount extends Thread{
+        @Override
+        synchronized public void run(){
+            int dt2;
+            actionInProgress=true;  
+            
+            StopWatch sw2=new StopWatch();
+            sw2.notification=false;
+            sw2.start();
+            
+            field[selectedX][selectedY].setIcon(tileIcon);
+            p2=p;
+            
+            int lX=selectedX*50-((p2.x/50)*50), lY=selectedY*50-((p2.y/50)*50);
+            int laserLenght=(int) (sqrt((lX*lX)+(lY*lY)));
+            System.out.println(lX+" "+lY+" "+laserLenght);
+            if(laserLenght<=laserRange || laserRange==1050)
+            {
+            int x=(p2.x/50)*50-selectedX*50, y=(p2.y/50)*50-selectedY*50;
+            double hipotenuse=sqrt((x*x)+(y*y));
+            
+            double u;
+            if(hipotenuse!=0) 
+                u=acos(((p2.x/50)*50-selectedX*50)/hipotenuse);
+            else {u=0;}
+                
+            if((p2.y/50)*50<selectedY*50) u=-u;
+                
+            double rotationRequired=u;
+            
+            BufferedImage iBuff=null;
+                    
+                    Graphics2D g2;
+            
+                    iBuff=new BufferedImage(laserLenght, 20, Color.TRANSLUCENT);
+                    g2=(Graphics2D) iBuff.getGraphics();   
+                    
+                    g2.drawImage(laserStart[50], 0, 0, rootPane);
+                    for(int j=1; j<(laserLenght/10); j++) 
+                        g2.drawImage(laserFragment[50], j*10, 0, rootPane);                 
+                                          
+                    //Drawing Laser
+                    AffineTransform tx2 = AffineTransform.getTranslateInstance(0, laserLenght/2-10);
+                    AffineTransformOp op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    
+                    AffineTransform tx3 = AffineTransform.getRotateInstance(u, laserLenght/2, laserLenght/2);
+                    AffineTransformOp op3 = new AffineTransformOp(tx3, AffineTransformOp.TYPE_BILINEAR);
+                    
+                    BufferedImage laserBuff=op2.filter(iBuff, null);
+                    BufferedImage laserBuff2=op3.filter(laserBuff, null);
+                    
+                    int leftCutX=0;
+                    for(int j=0; j<laserBuff2.getWidth(); j++)
+                       for(int k=0; k<laserBuff2.getHeight(); k++){
+                           if(laserBuff2.getRGB(j, k)!=0){
+                               leftCutX=j;
+                               k=laserBuff2.getHeight();
+                               j=laserBuff2.getWidth();
+                           }
+                       }        
+                    System.out.println("Left Cut on X: "+leftCutX);
+                    
+                    int rightCutX=0;
+                    for(int j=0; j<laserBuff2.getWidth(); j++)
+                       for(int k=0; k<laserBuff2.getHeight(); k++){
+                           if(laserBuff2.getRGB(laserBuff2.getWidth()-1-j, k)!=0){
+                               rightCutX=j;
+                               k=laserBuff2.getHeight();
+                               j=laserBuff2.getWidth();
+                           }
+                       }        
+                    System.out.println("Right Cut on X: "+rightCutX);
+                    
+                    int upCutY=0;
+                    for(int j=0; j<laserBuff2.getHeight(); j++)
+                       for(int k=0; k<laserBuff2.getWidth(); k++){
+                           if(laserBuff2.getRGB(k, j)!=0){
+                               upCutY=j;
+                               k=laserBuff2.getWidth();
+                               j=laserBuff2.getHeight();
+                           }
+                       }        
+                    System.out.println("Up Cut on Y: "+upCutY);
+                    
+                    int downCutY=0;
+                    for(int j=0; j<laserBuff2.getHeight(); j++)
+                       for(int k=0; k<laserBuff2.getWidth(); k++){
+                           if(laserBuff2.getRGB(k, laserBuff2.getHeight()-1-j)!=0){
+                               downCutY=j;
+                               k=laserBuff2.getWidth();
+                               j=laserBuff2.getHeight();
+                           }
+                       }        
+                    System.out.println("Down Cut on Y: "+downCutY);
+            
+            BoomCount bc=new BoomCount();
+            bc.start();
+            
+            for(int i=50; i>=1; i--)
+                {
+                    StopWatch sw=new StopWatch();
+                    sw.notification=false;
+                    sw.start();
+                    
+                    iBuff=new BufferedImage(laserLenght, 20, Color.TRANSLUCENT);
+                    g2=(Graphics2D) iBuff.getGraphics();   
+                    
+                    g2.drawImage(laserStart[i], 0, 0, rootPane);
+                    for(int j=1; j<(laserLenght/10); j++) 
+                        g2.drawImage(laserFragment[i], j*10, 0, rootPane);                 
+                            
+                    double locationX = iBuff.getWidth() / 2;
+                    double locationY = iBuff.getHeight() / 2;
+            
+                    //Location of Rotated Laser
+                    int centerX=((p2.x/50)*50+selectedX*50)/2;
+                    int centerY=((p2.y/50)*50+selectedY*50)/2;
+    
+                    //Drawing Laser
+                    //tx2 = AffineTransform.getTranslateInstance(0, laserLenght/2-10);
+                    //op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    
+                    //tx3 = AffineTransform.getRotateInstance(u, laserLenght/2, laserLenght/2);
+                    //op3 = new AffineTransformOp(tx3, AffineTransformOp.TYPE_BILINEAR);
+                    
+                    //AffineTransform tx4 = AffineTransform.getTranslateInstance(-leftCutX, 0);
+                    //AffineTransformOp op4 = new AffineTransformOp(tx4, AffineTransformOp.TYPE_BILINEAR);
+                    
+                    laserBuff=op2.filter(iBuff, null);
+                    laserBuff2=op3.filter(laserBuff, null);
+                    BufferedImage laserBuff3=laserBuff2.getSubimage(leftCutX, upCutY, laserBuff2.getWidth()-leftCutX-rightCutX, laserBuff2.getHeight()-upCutY-downCutY);
+                    
+                    /*
+                    Graphics2D g3=(Graphics2D) laserBuff3.getGraphics();
+                    g3.setColor(Color.red);
+                    g3.drawRect(0, 0, laserBuff3.getWidth()-1, laserBuff3.getHeight()-1);
+                    */
+                    
+                    laserImage=laserBuff3;
+                    laserIcon=new ImageIcon(laserImage);
+                    
+                    int bX=centerX-laserBuff3.getWidth()/2;
+                    int bY=centerY-laserBuff3.getHeight()/2;
+                   
+                    laserLabel.setLocation(bX+25, bY+25);
+                    laserLabel.setSize(laserBuff3.getWidth(), laserBuff3.getHeight());
+                    laserLabel.setIcon(laserIcon);
+                    
+                    laserLabel.setVisible(true);
+                    
+                    dt2=sw.count;
+                    sw.notification=true;
+                    
+                    //System.out.println(""+dt2);
+                    
+                    while (dt2>=20){
+                        i--;
+                        dt2=dt2-20;
+                    }
+                    
+                    //if (i<=1) i=51;
+                    
+                    //if (dt2<20) 
+                        try{wait(20-dt2); } catch (Exception e) {}
+                    
+                    iBuff=null;
+                    g2.dispose();
+                }
+            
+            laserLabel.setVisible(false);
+            selectedX=-1;
+            selectedY=-1;
+            caught=false;
+            
+            bc.notification=true;
+            dt2=sw2.count;
+            System.out.println("Laser Aprox ms: "+dt2);
+            
+            }
+            actionInProgress=false;
+            sw2.notification=true;
+        }
+        }
+    
+    // This class rotates explosion at the end of laser
+    public class BoomCount extends Thread{
+        BufferedImage eBuff;
+        Graphics2D g3;
+        public boolean notification=false;
+        int i=50;
+        @Override
+        synchronized public void run(){
+                
+                int dt2;
+                StopWatch sw2=new StopWatch();
+                sw2.notification=false;
+                sw2.start();
+                
+                //Rotating Explosion
+                do{    
+                    StopWatch sw=new StopWatch();
+                    sw.notification=false;
+                    sw.start();
+                    
+                    eBuff=new BufferedImage(51, 51, Color.TRANSLUCENT);
+                    g3=(Graphics2D) eBuff.getGraphics();
+                    g3.drawImage(explosionImage, 0, 0, rootPane);
+                    //g3.rotate(1);
+                    
+                             
+                    AffineTransform tx2 = AffineTransform.getRotateInstance(i, 26, 26);
+                    AffineTransformOp op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    BufferedImage explosionBuff=op2.filter(eBuff, null);
+                    rotatedExplosionImage=explosionBuff;
+                    explosionIcon=new ImageIcon(rotatedExplosionImage);
+                    
+                    explosionLabel.setIcon(explosionIcon);
+                    explosionLabel.setSize(explosionBuff.getWidth(), explosionBuff.getHeight());
+                    explosionLabel.setLocation((p2.x/50)*50, (p2.y/50)*50);
+                    explosionLabel.setVisible(true);
+                    
+                    i--;
+                    
+                    dt2=sw.count;
+                    while (dt2>=20){
+                        i--;
+                        dt2=dt2-20;
+                    }
+                    try{wait(20-dt2);}catch (Exception e){}
+                    sw.notification=true;
+                }while(!notification);
+                explosionLabel.setVisible(false);
+                
+                System.out.println("Explosion Aprox ms: "+sw2.count);
+                sw2.notification=true;
+                
+                eBuff=null;
+                g3.dispose();
+                
+                actionInProgress=false;
+        }
+    }
+    
+    // A class of objects that are used by animation threads to count time taken to
+    // alter the state on screen
+    public class StopWatch extends Thread{
+        public int count;
+        public boolean notification=false;
+        
+        @Override
+        synchronized public void run(){
+            count=0;
+            do{
+                try{
+                    wait(1);
+                } catch(Exception e) {}
+                count++;
+            }while (!notification);
+        }
+}
+    
+    // This method sets the application across the entire screen.
+    // It finds the best cut out image from the 4K one that is present in src.
+    // it rescales that cut out to be used as moveable backgroundImage.
+    // tbc
+    public void fullScreen(){
+        System.out.println("Big Picture Resolution: 5200x2500");
+        
+        /*
+        for(int i=0; i<GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes().length; i++){
+            int bitDepth=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes()[i].getBitDepth();
+            int width=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes()[i].getWidth();
+            int height=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes()[i].getHeight();
+            int refreshRate=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes()[i].getRefreshRate();
+       
+            System.out.println(bitDepth+" "+width+" "+height+" "+refreshRate);
+        }
+        */
+        
+        screenHeight=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
+        screenWidth=GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth();
+        System.out.println("Screen Resolution: "+screenWidth+"x"+screenHeight);
+        
+        moveableBackgroundWidth=(int) (screenWidth*1.1);
+        moveableBackgroundHeight=(int) (screenHeight*1.1);
+        System.out.println("Moveable Background Resolution: "+moveableBackgroundWidth+"x"+moveableBackgroundHeight);
+        
+        double pmw, pmh;
+        pmw=bigPictureWidth/moveableBackgroundWidth;
+        pmh=bigPictureHeight/moveableBackgroundHeight;
+        if(pmw<pmh) pictureModifier=pmw;
+        else pictureModifier=pmh;
+        System.out.println("Picture Modifier: "+pictureModifier);
+        
+        bigCutoutWidth=(int) (pictureModifier*moveableBackgroundWidth);
+        bigCutoutHeight=(int) (pictureModifier*moveableBackgroundHeight);
+        System.out.println("Big Cutout Resolution: "+bigCutoutWidth+"x"+bigCutoutHeight);
+        
+        //Loading of bigPicture
+        BufferedImage bigPictureBuff=null;
+        try
+        {
+            bigPictureBuff = ImageIO.read(getClass().getResource("/images/bigPicture.jpg"));
+        } catch (Exception e) {System.out.println(e);}
+        bigPictureBuff=bigPictureBuff.getSubimage((int)(bigPictureWidth-bigCutoutWidth)/2, (int)(bigPictureHeight-bigCutoutHeight)/2, bigCutoutWidth, bigCutoutHeight);
+        
+        AffineTransform scale = AffineTransform.getScaleInstance(1/pictureModifier, 1/pictureModifier);
+        AffineTransformOp opScale = new AffineTransformOp(scale, AffineTransformOp.TYPE_BILINEAR);
+        bigPictureBuff=opScale.filter(bigPictureBuff, null);
+        
+        moveableBackgroundImage = bigPictureBuff;
+        
+        System.out.println("Moveable Background Test: "+moveableBackgroundImage.getWidth(null));
+        
+        /*
+        rightPanelWidth=(int) (screenWidth*0.2);
+        downPanelHeight=(int) (screenHeight*0.1);
+        tableWidth=screenWidth-rightPanelWidth;
+        tableHeight=screenHeight-downPanelHeight;
+        System.out.println("Table Resolution: "+tableWidth+"x"+tableHeight);
+        System.out.println("Right Panel Width: "+rightPanelWidth);
+        System.out.println("Down Panel Height: "+downPanelHeight);
+        */
+    }
+    
+    // tbc
+    public class ButtonListener extends Thread{
+        int count=0;
+        @Override
+        public synchronized void run(){
+        while(!exit){
+            if(keyPressed) do{
+                try{wait(1);}catch(Exception e){}
+                if(keyPressed){
+                    count++;
+                    //madeBy.setText(""+count/1000);
+                }
+            }while(keyPressed & !exit);
+            try{wait(1);}catch(Exception e){}
+            }
+        }
+    }
+    
+    // tbc
+    public class TileButtonListener extends Thread{
+        int intU;
+        double u;
+        int impulsX;
+        int impulsY;
+        ImageIcon ship2Icon;
+        AffineTransform tx2;
+        AffineTransformOp op2;
+        Graphics2D graphics;
+        
+        
+        
+        @Override
+        public synchronized void run(){
+        u=0.0;
+        intU=0;
+        impulsX=0;
+        impulsY=0;
+        
+        while(!exit){
+            impulsX=0;
+            impulsY=0;
+            if(!(pressedKeyCodes.isEmpty())) do{
+                StopWatch sw=new StopWatch();
+                sw.start();
+                
+                if(pressedKeyCodes.contains("38")&!(pressedKeyCodes.contains("40"))) {
+                    bigShipLabel.setLocation(bigShipLabel.getLocation().x, bigShipLabel.getLocation().y-5);
+                    impulsY=-5;
+                }   
+                if(pressedKeyCodes.contains("40")&!(pressedKeyCodes.contains("38"))) {
+                    bigShipLabel.setLocation(bigShipLabel.getLocation().x, bigShipLabel.getLocation().y+5);
+                    impulsY=5;
+                }
+                {
+                if(pressedKeyCodes.contains("37")&!(pressedKeyCodes.contains("39"))) {
+                    if(intU>-5) {
+                        intU--;
+                        u=intU/10.0;
+                    }
+                    bigShipLabel.setLocation(bigShipLabel.getLocation().x-5, bigShipLabel.getLocation().y);
+                    impulsX=-5;
+                    tx2 = AffineTransform.getRotateInstance(u, 79, 79);
+                    op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    bigSpaceShipImage=op2.filter(bigSpaceShipBuff, null);
+                    graphics=(Graphics2D) bigSpaceShipImage.getGraphics();
+                    //bbt.setSize(bigSpaceShipImage.getWidth(null), bigSpaceShipImage.getHeight(null));
+                    ship2Icon=new ImageIcon(bigSpaceShipImage);
+                    bigShipLabel.setIcon(ship2Icon);
+                    //bbt.setSize(bigSpaceShipImage.getWidth(null), bigSpaceShipImage.getHeight(null));
+                }
+                else if(pressedKeyCodes.contains("39")&!(pressedKeyCodes.contains("37"))) {
+                    if(intU<5) {
+                        intU++;
+                        u=intU/10.0;
+                    }
+                    bigShipLabel.setLocation(bigShipLabel.getLocation().x+5, bigShipLabel.getLocation().y);
+                    impulsX=5;
+                    tx2 = AffineTransform.getRotateInstance(u, 79, 79);
+                    op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    bigSpaceShipImage=op2.filter(bigSpaceShipBuff, null);
+                    graphics=(Graphics2D) bigSpaceShipImage.getGraphics();
+                    //bbt.setSize(bigSpaceShipImage.getWidth(null), bigSpaceShipImage.getHeight(null));
+                    ship2Icon=new ImageIcon(bigSpaceShipImage);
+                    bigShipLabel.setIcon(ship2Icon);
+                }
+                else{
+                    if(intU>=1) {
+                        intU--;
+                        u=intU/10.0;
+                    }
+                    if(intU<=-1) {
+                        intU++;
+                        u=intU/10.0;
+                    }
+                    tx2 = AffineTransform.getRotateInstance(u, 79, 79);
+                    op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                    bigSpaceShipImage=op2.filter(bigSpaceShipBuff, null);
+                    ship2Icon=new ImageIcon(bigSpaceShipImage);
+                    //bbt.setSize(bigSpaceShipImage.getWidth(null), bigSpaceShipImage.getHeight(null));
+                    bigShipLabel.setIcon(ship2Icon);
+                }
+                }
+                if(pressedKeyCodes.contains("32")){
+                    Bullet bullet;
+                    if((!pressedKeyCodes.contains("37")&!pressedKeyCodes.contains("39"))||(pressedKeyCodes.contains("37")&pressedKeyCodes.contains("39"))) impulsX=0;
+                    if((!pressedKeyCodes.contains("38")&!pressedKeyCodes.contains("40"))||(pressedKeyCodes.contains("38")&pressedKeyCodes.contains("40"))) impulsY=0;
+                    
+                    switch(intU){
+                        case -5: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+18, bigShipLabel.getLocation().y+75, impulsX, impulsY);
+                            break;
+                        case -4: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+15, bigShipLabel.getLocation().y+71, impulsX, impulsY);
+                            break;
+                        case -3: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+18, bigShipLabel.getLocation().y+68, impulsX, impulsY);
+                            break;
+                        case -2: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+16, bigShipLabel.getLocation().y+64, impulsX, impulsY);
+                            break;
+                        case -1: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+16, bigShipLabel.getLocation().y+61, impulsX, impulsY);
+                            break;
+                        case 0: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+20, bigShipLabel.getLocation().y+59, impulsX, impulsY);
+                            break;
+                        case 1: 
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+21, bigShipLabel.getLocation().y+51, impulsX, impulsY);
+                            break;
+                        case 2:
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+20, bigShipLabel.getLocation().y+43, impulsX, impulsY);
+                            break;
+                        case 3:
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+27, bigShipLabel.getLocation().y+36, impulsX, impulsY);
+                            break;
+                        case 4:
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+29, bigShipLabel.getLocation().y+28, impulsX, impulsY);
+                            break;
+                        case 5:
+                            bullet=new Bullet(u, bigShipLabel.getLocation().x+35, bigShipLabel.getLocation().y+25, impulsX, impulsY);
+                            break;
+                        default:
+                            bullet=new Bullet(0, 0, 0, 0, 0);   
+                    }
+                                        
+                }
+                
+                int dsw=sw.count;
+                sw.notification=true;
+                
+                if(dsw<19) try{wait(19-dsw);}catch(Exception e){}
+            }while(!(pressedKeyCodes.isEmpty()) & !exit);
+            else{
+                StopWatch sw=new StopWatch();
+                sw.start();
+                
+                if(intU>=1) {
+                        intU--;
+                        u=intU/10.0;
+                    }
+                    if(intU<=-1) {
+                        intU++;
+                        u=intU/10.0;
+                    }
+                    
+                tx2 = AffineTransform.getRotateInstance(u, 79, 79);
+                op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_BILINEAR);
+                bigSpaceShipImage=op2.filter(bigSpaceShipBuff, null);
+                ship2Icon=new ImageIcon(bigSpaceShipImage);
+                bigShipLabel.setIcon(ship2Icon);
+                
+                int dsw=sw.count;
+                sw.notification=true;
+                
+                if(dsw<19) try{wait(19-dsw);}catch(Exception e){}
+            }
+            try{wait(1);}catch(Exception e){}
+            }
+        }
+    }
+    
+    // Class for bulletList
+    // tbc
+    public class Bullet{
+        int positionX;
+        int positionY;
+        
+        double angle;
+        
+        double positionDX;
+        double positionDY;
+        
+        int iX; 
+        int iY;
+        
+        JLabel label;
+        
+        Bullet(double u, int x, int y, int ix, int iy){
+            positionX=x;
+            positionY=y;
+            
+            positionDX=positionX;
+            positionDY=positionY;
+            
+            angle=u;
+            
+            iX=ix;
+            iY=iy;
+            
+            label=new JLabel();
+            label.setSize(13, 13);
+            label.setLocation(positionX, positionY);
+            label.setIcon(bulletIcon);
+            label.setVisible(true);
+            
+            layered.add(label);
+            
+            bulletLabelList.add(label);
+            
+            bulletList.add(this);
+        }         
+    }
+    
+    // Calculates position of bulletList, then sets them there.
+    // tbc
+    public class BulletManager extends Thread{
+        @Override
+        public synchronized void run(){
+            do{ 
+                StopWatch sw=new StopWatch();
+                sw.start();
+                
+                for(int i=0; i<bulletList.size(); i++){
+                    bulletList.get(i).positionDX=bulletList.get(i).positionDX+bulletList.get(i).iX/4.0-cos(bulletList.get(i).angle)*15/4.0;
+                    bulletList.get(i).positionDY=bulletList.get(i).positionDY+bulletList.get(i).iY/4.0-sin(bulletList.get(i).angle)*15/4.0;
+                    
+                    bulletList.get(i).positionX=(int) bulletList.get(i).positionDX;
+                    bulletList.get(i).positionY=(int) bulletList.get(i).positionDY;
+                    
+                    bulletList.get(i).label.setLocation(bulletList.get(i).positionX, bulletList.get(i).positionY);
+                }
+                for(int i=0; i<bulletList.size(); i++){
+                    if (bulletList.get(i).label.getLocation().x<=-13
+                      ||bulletList.get(i).label.getLocation().y<=-13
+                      ||bulletList.get(i).label.getLocation().y>=screenHeight) {
+                        
+                        layered.remove(bulletList.get(i).label);
+                        bulletList.remove(i);
+                        i--;
+                    }
+                }
+                int dt2=sw.count;
+                sw.notification=true;
+                
+                if(dt2<20/4) try{wait(20/4-dt2);}catch(Exception e){}
+                else System.out.println("Overtime");
+            }while(!exit);
+        }
+    }
+}
